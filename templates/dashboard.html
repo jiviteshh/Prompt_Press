@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧠 PromptPress Dashboard</title>
+  <link href="{{ url_for('static', filename='global.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+  <!-- 🔹 Navigation -->
+  <nav class="main-nav">
+    <div class="nav-brand"><a href="/dashboard" style="color:inherit; text-decoration:inherit;"><strong>🧠 PromptPress</strong></a></div>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <button onclick="openCopilot()" class="nav-button">🤖 Copilot</button>
+      <button onclick="openPopup('weatherModal')" class="nav-button">🌤️ Weather</button>
+      <button onclick="openPopup('stockModal')" class="nav-button">📈 Stocks</button>
+    </div>
+  </nav>
+
+  <!-- 🔹 Copilot Sidebar -->
+  <div id="copilotSidebar" class="copilot-sidebar">
+    <button class="close-copilot" onclick="closeCopilot()">❌</button>
+    <h3>🤖 News Copilot</h3>
+    <div id="copilotArticleBanner" style="display:none; font-size:0.78rem; background:rgba(99,102,241,0.15); border-left:3px solid #6366f1; padding:6px 10px; margin-bottom:8px; border-radius:4px; color:#c7d2fe;">
+      📰 <span id="copilotArticleTitle" style="font-weight:600;"></span>
+      <button onclick="resetCopilotContext()" style="float:right; background:none; border:none; color:#f87171; cursor:pointer; font-size:0.85rem;">✕ Clear</button>
+    </div>
+    <div id="copilotChatBox" class="chat-box"></div>
+    <input type="text" id="copilotInput" placeholder="Ask me about the article..."
+      onkeydown="if(event.key === 'Enter') sendCopilotMessage()" />
+  </div>
+
+  <!-- 🔹 Search & Trending -->
+  <div class="container">
+    <form method="get" action="/dashboard" class="search-form">
+      <input type="text" name="topic" placeholder="Search any topic" value="{{ current_topic or '' }}" required />
+      <select name="lang">
+        <option value="en" {% if lang == "en" %}selected{% endif %}>English</option>
+        <option value="hi" {% if lang == "hi" %}selected{% endif %}>Hindi</option>
+        <option value="te" {% if lang == "te" %}selected{% endif %}>Telugu</option>
+      </select>
+      <button class="button primary-button">🔍 Search</button>
+    </form>
+
+    <div class="trending-topics-section">
+      <h3>🔥 Trending Topics</h3>
+      <div class="topic-buttons-group">
+        {% for trending in ["AI", "Cricket", "Movies", "Startups", "Finance", "Education"] %}
+        <form method="get" action="/dashboard" style="display:inline;">
+          <input type="hidden" name="topic" value="{{ trending }}">
+          <button class="button secondary-button">{{ trending }}</button>
+        </form>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 🔹 News Cards from backend -->
+    {% macro news_card(article) -%}
+    <div class="news-card">
+      {% if article.image %}
+      <img src="{{ article.image }}" alt="News image" class="news-image">
+      {% else %}
+      <div class="news-image-placeholder">No Image</div>
+      {% endif %}
+      <div class="news-content">
+        <a class="news-title" href="{{ article.link }}" target="_blank">{{ article.title }}</a>
+        <div class="news-desc">{{ article.description }}</div>
+        <div class="news-actions">
+          <button class="button tertiary-button"
+            onclick="mailMeThis(`{{ article.title|e }}`, `{{ article.link|e }}`, `{{ article.description|e }}`, `{{ article.image|default('')|e }}`)">📩
+            Mail Me This</button>
+          <button class="button tertiary-button"
+            onclick="summarize(`{{ article.title|e }}`, `{{ article.link|e }}`)">🧠 Summarize</button>
+          <button class="button tertiary-button"
+            onclick="getInsight(`{{ article.description|e }}`)">💡 Why this matters</button>
+          <button class="button tertiary-button"
+            onclick="setArticleContext(`{{ article.title|e }}`, `{{ article.description|e }}`)">💬 Ask Copilot</button>
+        </div>
+        {% if article.related %}
+        <div class="related-news" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.08); padding-top:8px;">
+          <p style="font-size:0.75rem; font-weight:600; color:#a5b4fc; margin:0 0 5px 0; letter-spacing:0.04em; text-transform:uppercase;">🔗 Related News</p>
+          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:4px;">
+            {% for rel in article.related %}
+            <li style="font-size:0.8rem;">
+              <a href="{{ rel.link }}" target="_blank"
+                style="color:#cbd5e1; text-decoration:none; line-height:1.4; display:block; padding:2px 0;"
+                onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color='#cbd5e1'">
+                {{ rel.title }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {%- endmacro %}
+
+    {% if current_topic %}
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 class="section-title" style="margin-bottom:0;">🔎 Results for: {{ current_topic }}</h2>
+      <a href="/dashboard" class="button secondary-button" style="text-decoration:none;">❌ Clear Search</a>
+    </div>
+    {% for topic, articles in topic_news.items() %}
+    {% for article in articles %}
+    {{ news_card(article) }}
+    {% endfor %}
+    {% endfor %}
+    {% else %}
+    <h2 class="section-title">🔥 Top News</h2>
+    {% for article in top_news %}
+    {{ news_card(article) }}
+    {% endfor %}
+    <h2 class="section-title">🚨 Breaking News</h2>
+    {% for article in breaking_news %}
+    {{ news_card(article) }}
+    {% endfor %}
+    <h2 class="section-title">📈 Trending Topics</h2>
+    {% for topic, articles in trending_news.items() %}
+    <h3 class="section-subtitle">🗞️ {{ topic }}</h3>
+    {% for article in articles %}
+    {{ news_card(article) }}
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- 🔹 Modal: Summary -->
+  <div id="summaryModal" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">❌</button>
+      <h3>🧠 Summary</h3>
+      <p id="summaryText" class="modal-text">Loading...</p>
+    </div>
+  </div>
+
+  <!-- 🔹 Modal: Insight -->
+  <div id="insightModal" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('insightModal')">❌</button>
+      <h3>💡 Why This Matters</h3>
+      <p id="insightText" class="modal-text">Loading...</p>
+    </div>
+  </div>
+
+  <!-- 🔹 Modal: Weather -->
+  <div id="weatherModal" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closePopup('weatherModal')">❌</button>
+      <h2>🌤️ Check Weather</h2>
+      <form id="weatherFormPopup">
+        <input type="text" id="weatherCityPopup" placeholder="Enter city name" required />
+        <button type="submit">Get Weather</button>
+      </form>
+      <div class="weather-results">
+        <img id="weatherIconPopup" src="" style="display:none; width:42px;" />
+        <p id="weatherDetailsPopup"></p>
+        <p id="weatherSummaryPopup" class="nl-summary"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔹 Modal: Stocks -->
+  <div id="stockModal" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closePopup('stockModal')">❌</button>
+      <h2>📈 Check Stock</h2>
+      <form id="stockFormPopup">
+        <input type="text" id="stockSymbolPopup" placeholder="e.g. AAPL, TSLA" required />
+        <button type="submit">Get Stock</button>
+      </form>
+      <div class="stock-results">
+        <p id="stockDetailsPopup"></p>
+        <p id="stockSummaryPopup" class="nl-summary"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // Utility: Open Modal
+  function openPopup(id) {
+    document.getElementById(id).style.display = "flex";
+  }
+  function closePopup(id) {
+    document.getElementById(id).style.display = "none";
+  }
+
+  // Utility: Close Modal on ESC ➤ closes any open modal
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      document.querySelectorAll(".modal-overlay").forEach(modal => {
+        modal.style.display = "none";
+      });
+    }
+  });
+
+  // 🧠 Copilot Sidebar
+  function openCopilot() {
+    document.getElementById("copilotSidebar").classList.add("open");
+  }
+  function closeCopilot() {
+    document.getElementById("copilotSidebar").classList.remove("open");
+  }
+
+  // 🧠 Active article context for Copilot
+  let _copilotContext = "";
+
+  function setArticleContext(title, description) {
+    _copilotContext = description || "";
+    document.getElementById("copilotArticleTitle").textContent = title || "Selected Article";
+    document.getElementById("copilotArticleBanner").style.display = "block";
+    document.getElementById("copilotInput").placeholder = "Ask me about this article...";
+    openCopilot();
+    appendMessage("Copilot", '📰 Article loaded! Ask me anything about "' + title + '".');
+  }
+
+  function resetCopilotContext() {
+    _copilotContext = "";
+    document.getElementById("copilotArticleBanner").style.display = "none";
+    document.getElementById("copilotArticleTitle").textContent = "";
+    document.getElementById("copilotInput").placeholder = "Ask me about the news...";
+    appendMessage("Copilot", "🔄 Article context cleared. I am now in general mode.");
+  }
+
+  // 🧠 Copilot Chat Logic
+  async function sendCopilotMessage() {
+    const input = document.getElementById("copilotInput");
+    const userMessage = input.value.trim();
+    if (!userMessage) return;
+    appendMessage("You", userMessage);
+    input.value = "";
+    try {
+      const payload = { message: userMessage };
+      if (_copilotContext) payload.context = _copilotContext;
+      const response = await fetch("/chatbot_api", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      appendMessage("Copilot", data.answer || "❌ No response.");
+    } catch (err) {
+      appendMessage("Copilot", "⚠️ Failed to connect.");
+    }
+  }
+  function appendMessage(sender, text) {
+    const chatBox = document.getElementById("copilotChatBox");
+    const msg = document.createElement("div");
+    
+    // Light markdown parsing
+    const formatted = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br/>');
+
+    msg.style.padding = "8px 10px";
+    msg.style.background = sender === "You" ? "rgba(255,255,255,0.05)" : "transparent";
+    msg.style.borderRadius = "6px";
+    msg.style.marginBottom = "8px";
+    msg.style.lineHeight = "1.5";
+    msg.style.fontSize = "0.9rem";
+    
+    msg.innerHTML = "<strong>" + sender + ":</strong><br/>" + formatted;
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // 📬 Mail Article
+  function mailMeThis(title, link, desc, image) {
+    const email = prompt("Enter your email to receive this article:");
+    if (!email) return;
+    
+    const params = new URLSearchParams();
+    params.append("email", email);
+    params.append("title", title);
+    params.append("link", link);
+    params.append("desc", desc);
+    params.append("image", image || "");
+
+    fetch("/mail_news", {
+      method: "POST",
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      body: params.toString()
+    }).then(async res => {
+      if (res.ok) {
+        alert("✅ News sent to your email!");
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert("❌ Failed to send email: " + (err.error || "Unknown error"));
+      }
+    }).catch(err => {
+      alert("❌ Failed to send email.");
+    });
+  }
+
+  // 🔍 Article Summarizer
+  async function summarize(title, link) {
+    const response = await fetch("/summarize_api", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ link: link }),
+    });
+    const data = await response.json();
+    document.getElementById("summaryText").innerText = data.summary;
+    document.getElementById("summaryModal").style.display = "flex";
+  }
+  function closeModal() {
+    document.getElementById("summaryModal").style.display = "none";
+    document.getElementById("summaryText").innerText = "";
+  }
+
+  // 💡 Article Insight Generator
+  async function getInsight(text) {
+    if (!text || text.trim() === "") {
+      alert("⚠️ No article content available for insight.");
+      return;
+    }
+    
+    const response = await fetch("/insight", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: text }),
+    });
+    
+    const data = await response.json();
+    document.getElementById("insightText").innerText = data.insight || "⚠️ Unable to generate insight.";
+    document.getElementById("insightModal").style.display = "flex";
+  }
+
+  function closeModal(modalId) {
+    const id = modalId || "summaryModal";
+    document.getElementById(id).style.display = "none";
+    if (id === "insightModal") {
+      document.getElementById("insightText").innerText = "";
+    } else {
+      document.getElementById("summaryText").innerText = "";
+    }
+  }
+
+  // 🌤️ Weather Modal Submit
+  document.getElementById("weatherFormPopup").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const city = document.getElementById("weatherCityPopup").value.trim();
+    const summaryElem = document.getElementById("weatherSummaryPopup");
+    const detailsElem = document.getElementById("weatherDetailsPopup");
+    const iconElem = document.getElementById("weatherIconPopup");
+
+    if (!city) return;
+    summaryElem.innerText = "Fetching weather...";
+    detailsElem.innerText = "";
+    iconElem.style.display = "none";
+
+    try {
+      const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+      const data = await res.json();
+
+      if (data.error) {
+        summaryElem.innerText = "⚠️ City not found";
+        return;
+      }
+
+      iconElem.src = `https://openweathermap.org/img/wn/${data.icon}@2x.png`;
+      iconElem.style.display = "inline";
+      detailsElem.innerText = `${data.temp}°C · ${data.condition}, Wind: ${data.wind} km/h, Humidity: ${data.humidity}%`;
+      summaryElem.innerText = data.summary;
+    } catch (error) {
+      summaryElem.innerText = "❌ Error fetching weather.";
+      console.error(error);
+    }
+  });
+
+  // 📈 Stock Modal Submit
+  document.getElementById("stockFormPopup").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const symbol = document.getElementById("stockSymbolPopup").value.trim().toUpperCase();
+    const summaryElem = document.getElementById("stockSummaryPopup");
+    const detailsElem = document.getElementById("stockDetailsPopup");
+
+    if (!symbol) return;
+    summaryElem.innerText = "Fetching stock info...";
+    detailsElem.innerText = "";
+
+    try {
+      const res = await fetch(`/api/stock?symbol=${encodeURIComponent(symbol)}`);
+      const data = await res.json();
+
+      if (data.error) {
+        summaryElem.innerText = "⚠️ Symbol not found";
+        return;
+      }
+
+      detailsElem.innerText = `Price: $${data.price.toFixed(2)} (${data.change > 0 ? "+" : ""}${data.change.toFixed(2)} / ${data.pct.toFixed(2)}%)`;
+      summaryElem.innerText = data.summary;
+    } catch (error) {
+      summaryElem.innerText = "❌ Error fetching stock.";
+      console.error(error);
+    }
+  });
+</script>
+
+</body>
+
+</html>

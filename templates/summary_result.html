@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Summary Result</title>
+  <link href="{{ url_for('static', filename='global.css') }}" rel="stylesheet">
+</head>
+<body>
+  <div class="summary-box">
+    <h2 class="summary-title">{{ title }}</h2>
+    <p class="summary-link"><strong>🔗 Link:</strong> <a href="{{ link }}" target="_blank">{{ link }}</a></p>
+    <h3 class="summary-subtitle">🧠 Summary:</h3>
+    <p class="summary-text">{{ summary }}</p>
+    <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+  </div>
+</body>
+</html>
