@@ -1,154 +1,216 @@
-# 📰 PromptPress — AI News Dashboard
+# 📰 PromptPress — AI News Intelligence Platform
 
-<p align="center">
-  <img src="assests/email.png" width="800" alt="PromptPress Email Preview"/>
-</p>
+PromptPress is a GenAI-powered news platform that transforms how users interact with news — shifting from passive reading to intelligent understanding.
 
-> A full-stack AI-powered news dashboard that transforms how you experience news — with live aggregation, smart summaries, automated newsletters, and an AI copilot, all in one place.
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Video_Demo-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/naragam-jivitesh-71a4b8313_ai-python-flask-activity-7352672507297976322-vEnx)
-[![GitHub](https://img.shields.io/badge/GitHub-jiviteshh-181717?style=for-the-badge&logo=github)](https://github.com/jiviteshh)
-[![Built With Flask](https://img.shields.io/badge/Built%20With-Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![AI Powered](https://img.shields.io/badge/AI-Powered-8A2BE2?style=for-the-badge&logo=openai&logoColor=white)]()
-![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
+Instead of just showing headlines, PromptPress helps users understand **why news matters**, explore related stories, and interact with content using AI.
 
 ---
 
-## 📽️ Demo
+## 🚀 Overview
 
-> 🎬 **Watch the full walkthrough on LinkedIn:** [Click here to view the screen recording](https://www.linkedin.com/posts/naragam-jivitesh-71a4b8313_ai-python-flask-activity-7352672507297976322-vEnx)
+Modern news platforms focus on delivering content, but not helping users understand it. PromptPress introduces a **context-first, user-controlled GenAI approach** to news consumption.
+
+Users can:
+- Quickly grasp the context of a news article  
+- Generate insights about its importance  
+- Ask questions grounded in the article  
+- Explore related news for broader understanding  
 
 ---
 
-## 📌 Overview
+## ✨ Core Features
 
-**PromptPress** is a full-stack AI news dashboard that brings together live news, AI summaries, personalized newsletters, weather, stocks, and a conversational copilot — all inside a single modern interface. Built with Flask and powered by multiple real-world APIs, it's designed to cut through information overload and deliver exactly what matters, instantly.
+### 📰 Real-Time News Dashboard
+- Live news aggregation based on categories  
+- Clean and responsive interface  
 
 ---
 
-## ✨ Features
+### 🌐 Language-Based News Filtering
 
-| Feature | Description |
-|---|---|
-| 📰 **Live News Aggregator** | Real-time topic search, trending headlines, and daily news digests |
-| 📩 **Mail My News** | AI-personalized newsletters auto-delivered every morning via Gmail SMTP |
-| 🧠 **AI Summaries** | One-tap smart summaries powered by Cohere to cut through the clutter |
-| 🤖 **Copilot Chatbot** | Floating AI sidebar for news Q&A, weather queries, and general conversation via Groq |
-| 🌦️ **Weather Widget** | Real-time weather updates with AI-generated daily summaries |
-| 📈 **Stocks Widget** | Live stock data with AI-powered market insights |
-| 🎨 **Modern UI** | Mobile-first design with animated modals, popups, and a floating chat sidebar |
+<img src="assets/language_filter.png" width="800"/>
+
+- Filter news based on preferred language  
+- Enhances accessibility and personalization  
+
+---
+
+### 💡 AI Insight Layer (Why This Matters)
+
+<img src="assets/insight.png" width="800"/>
+
+- Explains **why a news article matters**  
+- Highlights impact and relevance in 2–3 lines  
+
+---
+
+### 🧠 On-Demand Summarization
+
+<img src="assets/summary.png" width="800"/>
+
+- Generate summaries only when needed  
+- Preserves original context  
+
+---
+
+### 🤖 Article-Aware Chatbot
+
+<img src="assets/chatbot.png" width="800"/>
+
+- Answers questions **strictly based on the article**  
+- Reduces hallucination using contextual grounding  
+
+---
+
+### 🔗 Related News
+
+<img src="assets/redirect.png" width="800"/>
+
+- Connects similar articles  
+- Helps users understand evolving stories  
+
+---
+
+### 📩 Mail Me This
+
+<img src="assets/email.png" width="800"/>
+
+- Instantly send selected news to email  
+
+---
+
+### 🌦️ Weather & 📈 Stocks Insights
+
+<img src="assets/weather_stocks.png" width="800"/>
+
+- Provides simple AI-generated explanations  
+- Converts raw data into meaningful insights  
+
+---
+
+## 🧠 GenAI Capabilities
+
+PromptPress uses GenAI in a **focused and responsible way**:
+
+- Insight generation (why it matters)  
+- Context-aware question answering  
+- On-demand summarization  
+- Lightweight reasoning across articles  
+
+> AI is **user-controlled**, not automatic.
+
+---
+
+## 🏗️ System Flow
+
+```
+News API → Context Layer → GenAI Layer → User Interaction → Output
+```
+
+1. Fetch real-time news from APIs  
+2. Display contextual preview  
+3. Apply GenAI features on demand  
+4. Return insights, summaries, and answers  
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Backend | Flask (Python), Jinja2 Templates |
-| Frontend | Vanilla JavaScript, Modular HTML/CSS |
-| Email Automation | Gmail SMTP |
-| News API | Newsdata.io |
-| Weather API | OpenWeatherMap |
-| Stocks API | Alpha Vantage |
-| AI Summarization | Cohere API |
-| AI Chatbot | Groq |
+- Backend: Flask (Python)  
+- Frontend: HTML, CSS, JavaScript  
+- AI Layer: Large Language Models (LLMs)  
+- News API  
+- OpenWeather API  
+- Alpha Vantage API  
+- Gmail SMTP  
 
 ---
 
-## 🔌 API Keys Required
+## ⚙️ Setup Instructions
 
-Create a `.env` file in the root directory:
-
-```env
-NEWS_API_KEY=your_newsdata_io_key
-WEATHER_API_KEY=your_openweathermap_key
-STOCKS_API_KEY=your_alpha_vantage_key
-COHERE_API_KEY=your_cohere_key
-GROQ_API_KEY=your_groq_key
-GMAIL_USER=your_gmail_address
-GMAIL_PASSWORD=your_gmail_app_password
+### 1. Clone Repository
+```bash
+git clone https://github.com/your-username/promptpress-ai-news-intelligence.git
+cd promptpress-ai-news-intelligence
 ```
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Python `3.10+`
-- pip
-- Gmail account with App Password enabled
-
-### Installation
-
+### 2. Create Virtual Environment
 ```bash
-# Clone the repository
-git clone https://github.com/jiviteshh/promptpress.git
-
-# Navigate into the project
-cd promptpress
-
-# Create and activate a virtual environment
 python -m venv venv
-source venv/bin/activate        # On Windows: venv\Scripts\activate
+source venv/bin/activate        # Windows: venv\Scripts\activate
+```
 
-# Install dependencies
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-# Add your API keys to .env file
+### 4. Configure Environment Variables
 
-# Start the development server
+Create a `.env` file:
+
+```env
+EMAIL_ADDRESS=your_email
+EMAIL_PASSWORD=your_app_password
+NEWS_API_KEY=your_key
+COHERE_API_KEY=your_key
+GROQ_API_KEY=your_key
+OPENWEATHER_API_KEY=your_key
+ALPHAVANTAGE_API_KEY=your_key
+```
+
+### 5. Run Application
+```bash
 python app.py
 ```
 
-Then open your browser and visit: `http://127.0.0.1:5000`
-
----
-
-## 🔄 How It Works
-
+Open in browser:
 ```
-User opens PromptPress Dashboard
-        ↓
-Live news fetched from Newsdata.io in real time
-        ↓
-User taps summary → Cohere API returns AI summary instantly
-        ↓
-Copilot sidebar → Groq handles Q&A and general chat
-        ↓
-Weather & Stocks widgets → live data + AI daily insights
-        ↓
-Every morning → Gmail SMTP delivers personalized AI newsletter
+http://127.0.0.1:5000
 ```
 
 ---
 
-## 🗺️ Roadmap
+## 📊 Evaluation
 
-- [ ] User authentication & saved preferences
-- [ ] Category-based news filtering (Tech, Sports, Finance, etc.)
-- [ ] Bookmark and read-later functionality
-- [ ] Multi-language news support
-- [ ] Deployed live version
+- Insight clarity and usefulness  
+- Summary accuracy  
+- Chatbot response correctness  
+- User interaction metrics  
+- System performance  
 
 ---
 
-## 📄 License
+## 🌱 Future Scope
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+- Multi-language expansion  
+- Advanced story tracking  
+- Personalized recommendations  
+- Domain-specific intelligence  
+
+---
+
+## 🏆 What Makes It Unique
+
+- Focus on **understanding, not just summarization**  
+- Human-in-the-loop AI interaction  
+- Grounded responses to reduce hallucination  
+- Lightweight, scalable, and buildable system  
 
 ---
 
 ## 👤 Author
 
 **Jivitesh**  
-Built to explore the intersection of AI, APIs, and full-stack web development. 🧠📰
+ET AI Hackathon 2026  
 
-- GitHub: [@jiviteshh](https://github.com/jiviteshh)
-- LinkedIn: [linkedin.com/in/naragam-jivitesh-71a4b8313](https://www.linkedin.com/in/naragam-jivitesh-71a4b8313)
+- GitHub: https://github.com/jiviteshh  
+- LinkedIn: https://linkedin.com/in/naragam-jivitesh-71a4b8313  
 
 ---
 
-> 💡 *Want to try it out, collaborate, or give feedback? Reach out on LinkedIn — always open to connecting!*
+## ⭐ Final Thought
 
-> ⭐ If you found this project interesting, please give it a star!
+> PromptPress transforms news from information overload into intelligent understanding.
+
+If you found this project useful, consider giving it a ⭐
