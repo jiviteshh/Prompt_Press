@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 📰 PromptPress — AI News Dashboard
 
 > A full-stack AI-powered news dashboard that transforms how you experience news — with live aggregation, smart summaries, automated newsletters, and an AI copilot, all in one place.
@@ -148,3 +149,6 @@ Built to explore the intersection of AI, APIs, and full-stack web development. �
 > 💡 *Want to try it out, collaborate, or give feedback? Reach out on LinkedIn — always open to connecting!*
 
 > ⭐ If you found this project interesting, please give it a star!
+=======
+# Prompt_Press
+>>>>>>> 3afa90140c84b9bbd516f294ea73ef7f875389e2
